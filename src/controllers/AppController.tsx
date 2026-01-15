@@ -6,9 +6,9 @@ import Sidebar from "../components/Sidebar"
 
 // Views (page-level components)
 import Dashboard from "../components/pages/Dashboard"
-import Users from "../components/pages/Users"
 import LoanRequests from "../components/pages/LoanRequests"
 import LoanPlans from "../components/pages/Loan Plans"
+import Users from "../components/pages/Users"
 import PaymentHistory from "../components/pages/Paymenthistory"
 import Transaction from "../components/pages/Transaction"
 import LoanStatus from "../components/pages/LoanStatus"

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react"
-import { ChevronLeft, ChevronRight, PlusCircle, Trash2, X } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import type { FormEvent } from "react"
+import { ChevronLeft, ChevronRight, PlusCircle, Search, Trash2, X } from "lucide-react"
 import adminProfile from "../../assets/will.png"
 
 type LoanPlan = {
@@ -10,6 +11,7 @@ type LoanPlan = {
   status: "Active" | "Draft" | "Archived"
   interestRate: number
   description: string
+  createdAt: string
 }
 
 const sampleLoanPlans: LoanPlan[] = [
@@ -21,6 +23,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Active",
     interestRate: 6.2,
     description: "Ideal for SMEs scaling operations with predictable revenue over the next year.",
+    createdAt: "2024-03-18",
   },
   {
     id: "plan-2",
@@ -30,6 +33,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Draft",
     interestRate: 5.4,
     description: "Short-term infusion to bridge product launches or marketing pushes.",
+    createdAt: "2024-04-02",
   },
   {
     id: "plan-3",
@@ -39,6 +43,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Active",
     interestRate: 7.5,
     description: "Extended runway for teams reinvesting in R&D and infrastructure.",
+    createdAt: "2023-12-04",
   },
   {
     id: "plan-4",
@@ -48,6 +53,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Archived",
     interestRate: 4.8,
     description: "Legacy program used for clients transitioning to the prime suite.",
+    createdAt: "2023-10-22",
   },
   {
     id: "plan-5",
@@ -57,6 +63,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Active",
     interestRate: 6.9,
     description: "Balanced approach for consistent yield with manageable monthly payouts.",
+    createdAt: "2024-01-12",
   },
   {
     id: "plan-6",
@@ -66,6 +73,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Draft",
     interestRate: 4.2,
     description: "Test plan for onboarding new regions with mobile-first borrowers.",
+    createdAt: "2024-05-08",
   },
   {
     id: "plan-7",
@@ -75,6 +83,7 @@ const sampleLoanPlans: LoanPlan[] = [
     status: "Active",
     interestRate: 8.1,
     description: "Premium tier backed by multi-sig collateral and audited cash flows.",
+    createdAt: "2023-08-15",
   },
 ]
 
@@ -84,18 +93,47 @@ export default function LoanPlans() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<LoanPlan | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortOption, setSortOption] = useState("newest")
 
-  const totalPages = Math.ceil(sampleLoanPlans.length / ITEMS_PER_PAGE)
+  const filteredPlans = useMemo(() => {
+    const normalized = searchTerm.toLowerCase()
+    const filtered = sampleLoanPlans.filter((plan) => {
+      if (!normalized) return true
+      return plan.name.toLowerCase().includes(normalized) || plan.description.toLowerCase().includes(normalized)
+    })
+
+    return filtered.sort((a, b) => {
+      switch (sortOption) {
+        case "amount-desc":
+          return b.amountEth - a.amountEth
+        case "amount-asc":
+          return a.amountEth - b.amountEth
+        case "name":
+          return a.name.localeCompare(b.name)
+        default:
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+    })
+  }, [searchTerm, sortOption])
+
+  const totalPages = Math.max(1, Math.ceil(filteredPlans.length / ITEMS_PER_PAGE))
 
   const visiblePlans = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return sampleLoanPlans.slice(start, start + ITEMS_PER_PAGE)
-  }, [currentPage])
+    return filteredPlans.slice(start, start + ITEMS_PER_PAGE)
+  }, [currentPage, filteredPlans])
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1)
+    }
+  }, [currentPage, totalPages])
 
   const handleCardClick = (plan: LoanPlan) => setSelectedPlan(plan)
   const closePlanModal = () => setSelectedPlan(null)
 
-  const handleCreatePlan = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreatePlan = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsAddModalOpen(false)
   }
@@ -116,21 +154,50 @@ export default function LoanPlans() {
       </div>
 
       <div className="p-8 space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Loan Plans</h1>
             <p className="text-sm text-gray-500">Curated credit products tailored for web3-native businesses.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600"
-          >
-            <PlusCircle size={18} /> Add Loan Plan
-          </button>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center">
+            <div className="relative w-full md:w-64">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
+                <Search size={16} />
+              </span>
+              <input
+                type="text"
+                placeholder="Search plans"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-white px-10 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100"
+              />
+            </div>
+            <select
+              value={sortOption}
+              onChange={(event) => setSortOption(event.target.value)}
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100"
+            >
+              <option value="newest">Newest first</option>
+              <option value="amount-desc">Amount: High to Low</option>
+              <option value="amount-asc">Amount: Low to High</option>
+              <option value="name">Alphabetical</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600"
+            >
+              <PlusCircle size={18} /> Add Loan Plan
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {visiblePlans.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-sm text-gray-500">
+              No loan plans match your filters.
+            </div>
+          )}
           {visiblePlans.map((plan) => (
             <button
               key={plan.id}
@@ -170,8 +237,12 @@ export default function LoanPlans() {
 
         <div className="flex flex-col gap-4 border-t border-gray-200 pt-4 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
           <span>
-            Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
-            {Math.min(currentPage * ITEMS_PER_PAGE, sampleLoanPlans.length)} of {sampleLoanPlans.length} plans
+            {filteredPlans.length === 0
+              ? "Showing 0 of 0 plans"
+              : `Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}–${Math.min(
+                  currentPage * ITEMS_PER_PAGE,
+                  filteredPlans.length,
+                )} of ${filteredPlans.length} plans`}
           </span>
           <div className="flex items-center gap-2">
             <button
