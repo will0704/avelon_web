@@ -1,77 +1,104 @@
-<<<<<<< HEAD
-# avelon_web
-=======
-# React + TypeScript + Vite
+# Avelon Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Avelon** is a decentralized crypto-lending platform that connects borrowers seeking capital with lenders looking for secure, transparent investment opportunities—all powered by smart contracts and AI-driven risk assessment.
 
-Currently, two official plugins are available:
+This repository contains the **Admin Dashboard** for the Avelon platform, built with Next.js 16.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Language:** TypeScript
+- **UI:** React 19, TailwindCSS
+- **Icons:** Lucide React
+- **Blockchain:** Ethers.js
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+```bash
+# Install dependencies
+npm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Run development server
+npm run dev
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Build for production
+npm run build
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start production server
+npm run start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
->>>>>>> f3814c0 (Initial commit)
+avelon_web/
+├── public/                    # Static assets
+│   └── images/
+├── src/
+│   ├── app/                   # Next.js App Router
+│   │   ├── layout.tsx         # Root layout
+│   │   ├── page.tsx           # Landing (redirects to /admin)
+│   │   ├── (auth)/            # Auth route group
+│   │   │   └── login/
+│   │   │       └── page.tsx
+│   │   └── (admin)/           # Admin route group
+│   │       ├── layout.tsx     # Admin layout with Sidebar
+│   │       └── admin/
+│   │           ├── page.tsx            # Dashboard
+│   │           ├── users/
+│   │           ├── loan-plans/
+│   │           ├── loan-requests/
+│   │           ├── payment-history/
+│   │           ├── transactions/
+│   │           ├── loan-status/
+│   │           ├── deposits/
+│   │           ├── wallet/
+│   │           ├── completed-loans/
+│   │           └── settings/
+│   ├── components/
+│   │   ├── layout/            # Layout components (Sidebar)
+│   │   └── pages/             # Page content components
+│   ├── assets/                # Images and static assets
+│   └── styles/
+│       └── globals.css        # Global styles (TailwindCSS)
+├── next.config.ts             # Next.js configuration
+├── tailwind.config.js         # TailwindCSS configuration
+├── tsconfig.json              # TypeScript configuration
+└── package.json
+```
+
+## Admin Routes
+
+| Route | Description |
+|-------|-------------|
+| `/admin` | Dashboard overview |
+| `/admin/users` | User management |
+| `/admin/loan-plans` | Loan plan configuration |
+| `/admin/loan-requests` | Pending loan requests |
+| `/admin/loan-status` | Active loan monitoring |
+| `/admin/payment-history` | Payment records |
+| `/admin/transactions` | Transaction history |
+| `/admin/deposits` | Deposit tracking |
+| `/admin/wallet` | Wallet management |
+| `/admin/completed-loans` | Completed loans archive |
+| `/admin/settings` | Admin settings |
+
+## Features
+
+- **Authentication** - Secure admin login
+- **Dashboard** - Real-time metrics and analytics
+- **User Management** - View, verify, and manage users
+- **Loan Management** - Create and manage loan plans
+- **Analytics** - Loan volume trends and ETH volatility predictions
+- **Transaction Tracking** - Complete transaction history
+
+## Documentation
+
+For detailed project documentation, see the `/docs` folder:
+- [Project Overview](./docs/avelon_overview/)
+
+## License
+
+Private - Avelon Team
