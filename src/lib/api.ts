@@ -58,6 +58,7 @@ export function clearTokens(): void {
     localStorage.removeItem(AUTH_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(AUTH_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(AUTH_KEYS.USER);
+    document.cookie = 'avelon:authenticated=; path=/; max-age=0'; // Fix proxy loop issue
 }
 
 /**
