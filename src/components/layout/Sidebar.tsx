@@ -11,7 +11,9 @@ import {
     Settings,
     LogOut,
     TrendingUp,
-    User
+    User,
+    Bell,
+    ScrollText,
 } from 'lucide-react'
 import Image from 'next/image'
 import avelonLogo from '@/assets/avelon_nobg.png'
@@ -35,6 +37,8 @@ export default function Sidebar({ currentPage, onNavigate, onLogout, userName }:
         { id: 'deposits', icon: TrendingUp, label: 'Deposits' },
         { id: 'wallet', icon: Wallet, label: 'Wallet' },
         { id: 'completed-loans', icon: CheckCircle, label: 'Completed Loans' },
+        { id: 'notifications', icon: Bell, label: 'Notifications' },
+        { id: 'logs', icon: ScrollText, label: 'Logs' },
     ]
 
     return (
