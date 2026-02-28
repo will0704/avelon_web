@@ -1,6 +1,6 @@
 'use client'
 
-import { TrendingUp, Users, Activity, Zap, DollarSign, BarChart3 } from 'lucide-react'
+import { TrendingUp, Users, Activity, Zap, DollarSign, BarChart3, Shield, LogIn, CreditCard, FileCheck } from 'lucide-react'
 import { useCachedFetch } from '@/lib/use-cached-fetch'
 import { useRouter } from 'next/navigation'
 import { DashboardSkeleton } from '@/components/skeletons'
@@ -10,6 +10,19 @@ type AnalyticsData = {
     loans: { total: number; active: number; repaid: number; liquidated: number; totalVolume: number }
     treasury: { balance: number; totalLent: number; totalInterestEarned: number; totalFees: number }
     recentActivity: { type: string; message: string; createdAt: string }[]
+}
+
+const ACTIVITY_ICONS: Record<string, { icon: typeof Activity; color: string }> = {
+    LOGIN: { icon: LogIn, color: 'text-blue-500' },
+    LOAN_CREATE: { icon: CreditCard, color: 'text-purple-500' },
+    LOAN_REPAY: { icon: CreditCard, color: 'text-green-500' },
+    KYC_SUBMIT: { icon: FileCheck, color: 'text-amber-500' },
+    KYC_APPROVE: { icon: Shield, color: 'text-green-500' },
+    KYC_REJECT: { icon: Shield, color: 'text-red-500' },
+}
+
+function getActivityIcon(type: string) {
+    return ACTIVITY_ICONS[type] ?? { icon: Activity, color: 'text-orange-500' }
 }
 
 export default function AdminDashboardPage() {
@@ -107,15 +120,20 @@ export default function AdminDashboardPage() {
                             {(data.recentActivity ?? []).length === 0 && (
                                 <p className="text-sm text-gray-500">No recent activity.</p>
                             )}
-                            {(data.recentActivity ?? []).slice(0, 8).map((event, idx) => (
-                                <div key={idx} className="flex items-start gap-3">
-                                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2" />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-sm">{event.message}</div>
-                                        <div className="text-xs text-gray-500">{new Date(event.createdAt).toLocaleString()}</div>
+                            {(data.recentActivity ?? []).slice(0, 8).map((event, idx) => {
+                                const { icon: Icon, color } = getActivityIcon(event.type)
+                                return (
+                                    <div key={idx} className="flex items-start gap-3">
+                                        <div className={`mt-0.5 ${color}`}>
+                                            <Icon size={16} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{event.message || event.type}</p>
+                                            <p className="text-xs text-gray-500">{new Date(event.createdAt).toLocaleString()}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     </div>
 

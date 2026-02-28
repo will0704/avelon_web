@@ -23,7 +23,7 @@ const inflowTypes = new Set([
 ])
 
 export default function Transaction() {
-  const { data: txData, loading, error, refresh } = useCachedFetch<{ transactions: LoanTransaction[] }>("/api/v1/admin/loans")
+  const { data: txData, loading, error, refresh } = useCachedFetch<{ transactions: LoanTransaction[] }>("/api/v1/admin/transactions")
   const transactions = txData?.transactions ?? []
   const [searchTerm, setSearchTerm] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
