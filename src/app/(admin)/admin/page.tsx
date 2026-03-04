@@ -12,6 +12,11 @@ type AnalyticsData = {
     recentActivity: { type: string; message: string; createdAt: string }[]
 }
 
+type BlockchainStatus = {
+    online: boolean
+    network: { name: string; chainId: string }
+}
+
 const ACTIVITY_ICONS: Record<string, { icon: typeof Activity; color: string }> = {
     LOGIN: { icon: LogIn, color: 'text-blue-500' },
     LOAN_CREATE: { icon: CreditCard, color: 'text-purple-500' },
@@ -27,6 +32,7 @@ function getActivityIcon(type: string) {
 
 export default function AdminDashboardPage() {
     const { data: analytics, loading, error, refresh } = useCachedFetch<AnalyticsData>('/api/v1/admin/analytics')
+    const { data: chainStatus } = useCachedFetch<BlockchainStatus>('/api/v1/admin/blockchain')
     const router = useRouter()
 
     if (loading) return <DashboardSkeleton />
@@ -141,12 +147,12 @@ export default function AdminDashboardPage() {
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                         <h3 className="text-lg font-semibold mb-4">Overview</h3>
                         <div className="space-y-3 mb-6">
-                            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div className={`flex items-center justify-between p-3 rounded-lg border ${chainStatus?.online ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                                 <div className="flex items-center gap-2">
-                                    <Zap className="text-green-500" size={18} />
+                                    <Zap className={chainStatus?.online ? 'text-green-500' : 'text-red-500'} size={18} />
                                     <span className="text-sm font-medium">Smart Contracts</span>
                                 </div>
-                                <span className="text-xs text-green-600 font-medium">LIVE</span>
+                                <span className={`text-xs font-medium ${chainStatus?.online ? 'text-green-600' : 'text-red-600'}`}>{chainStatus?.online ? 'LIVE' : 'OFFLINE'}</span>
                             </div>
                             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
                                 <div className="flex items-center gap-2">

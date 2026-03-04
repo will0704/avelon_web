@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { Menu } from 'lucide-react'
 import Sidebar from '@/components/layout/Sidebar'
 import { useAuth } from '@/contexts/auth-context'
 
@@ -13,6 +14,7 @@ export default function AdminLayout({
     const router = useRouter()
     const pathname = usePathname()
     const { user, isLoading, isAuthenticated, logout } = useAuth()
+    const [sidebarOpen, setSidebarOpen] = useState(false)
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -20,13 +22,16 @@ export default function AdminLayout({
         }
     }, [isLoading, isAuthenticated, router])
 
+    // Close sidebar on route change (mobile)
+    useEffect(() => {
+        setSidebarOpen(false)
+    }, [pathname])
+
     const handleLogout = async () => {
-        // Clear auth cookie
         document.cookie = 'avelon:authenticated=; path=/; max-age=0'
         await logout()
     }
 
-    // Get current page from pathname
     const getCurrentPage = () => {
         if (pathname === '/admin') return 'dashboard'
         const segments = pathname.split('/')
@@ -41,7 +46,6 @@ export default function AdminLayout({
         }
     }
 
-    // Show loading while checking auth
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-gray-100">
@@ -50,7 +54,6 @@ export default function AdminLayout({
         )
     }
 
-    // If not authenticated, don't render (redirect will happen)
     if (!isAuthenticated) {
         return null
     }
@@ -62,9 +65,24 @@ export default function AdminLayout({
                 onNavigate={handleNavigate}
                 onLogout={handleLogout}
                 userName={user?.name || user?.email || 'Admin'}
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
             />
-            <div className="flex-1 overflow-auto">
-                {children}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Mobile header with hamburger */}
+                <div className="md:hidden flex items-center h-14 px-4 bg-white border-b border-gray-200 shrink-0">
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition"
+                        aria-label="Open menu"
+                    >
+                        <Menu size={22} />
+                    </button>
+                    <span className="ml-3 text-sm font-semibold text-gray-900">Avelon Admin</span>
+                </div>
+                <main className="flex-1 overflow-auto" role="main" aria-label="Page content">
+                    {children}
+                </main>
             </div>
         </div>
     )

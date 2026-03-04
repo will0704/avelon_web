@@ -1,10 +1,59 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import avelonLogo from '@/assets/avelon_nobg.png'
 import { useAuth } from '@/contexts/auth-context'
+import { AlertCircle, Lock, ShieldOff, WifiOff } from 'lucide-react'
+
+// Determine the error type from the message so we can show the right icon
+type ErrorType = 'locked' | 'suspended' | 'network' | 'generic'
+
+function getErrorType(message: string): ErrorType {
+    const msg = String(message ?? '').toLowerCase()
+    if (msg.includes('locked')) return 'locked'
+    if (msg.includes('suspended')) return 'suspended'
+    if (msg.includes('network')) return 'network'
+    return 'generic'
+}
+
+function parseRetrySeconds(message: string): number {
+    const match = String(message ?? '').match(/(\d+)\s*seconds?/i)
+    return match ? parseInt(match[1], 10) : 0
+}
+
+function ErrorAlert({ message }: { message: string }) {
+    const type = getErrorType(message)
+    const [countdown, setCountdown] = useState(() =>
+        type === 'locked' ? parseRetrySeconds(message) : 0
+    )
+
+    useEffect(() => {
+        if (countdown <= 0) return
+        const id = setInterval(() => setCountdown((c) => (c > 0 ? c - 1 : 0)), 1000)
+        return () => clearInterval(id)
+    }, [countdown])
+
+    const Icon =
+        type === 'locked' ? Lock :
+            type === 'suspended' ? ShieldOff :
+                type === 'network' ? WifiOff :
+                    AlertCircle
+
+    // Strip the seconds from the message when showing our own countdown
+    const displayMessage =
+        type === 'locked' && countdown > 0
+            ? `Account temporarily locked. Retry in ${countdown}s.`
+            : message
+
+    return (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+            <Icon size={16} className="mt-0.5 shrink-0" />
+            <span>{displayMessage}</span>
+        </div>
+    )
+}
 
 export default function LoginPage() {
     const router = useRouter()
@@ -67,11 +116,7 @@ export default function LoginPage() {
                 </div>
 
                 <form onSubmit={handleLogin}>
-                    {error && (
-                        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
-                            {error}
-                        </div>
-                    )}
+                    {error && <ErrorAlert message={error} />}
 
                     <div className="mb-4">
                         <label className="text-sm text-gray-600">Email</label>

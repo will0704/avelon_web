@@ -77,7 +77,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result = await apiLogin(email, password);
 
             if (!result.success || !result.data) {
-                return { success: false, error: result.message || 'Login failed' };
+                // Backend returns errors as { error: { code, message } }
+                const errorMsg =
+                    (typeof result.error === 'object' && result.error !== null
+                        ? (result.error as { message?: string }).message
+                        : result.error) ||
+                    result.message ||
+                    'Login failed';
+                return { success: false, error: String(errorMsg) };
             }
 
             const { user: loginUser, accessToken, refreshToken, expiresIn } = result.data;
@@ -93,8 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserState(loginUser);
 
             return { success: true };
-        } catch (error) {
-            return { success: false, error: 'Network error. Please try again.' };
+        } catch {
+            return { success: false, error: 'Network error. Please check your connection and try again.' };
         }
     }, []);
 
