@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import avelonLogo from '@/assets/avelon_nobg.png'
@@ -55,7 +55,7 @@ function ErrorAlert({ message }: { message: string }) {
     )
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { login, isLoading: authLoading } = useAuth()
@@ -156,5 +156,19 @@ export default function LoginPage() {
                 </p>
             </div>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center bg-white">
+                    <div className="text-gray-500">Loading...</div>
+                </div>
+            }
+        >
+            <LoginPageContent />
+        </Suspense>
     )
 }

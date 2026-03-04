@@ -1,5 +1,5 @@
 import { TrendingUp, AlertTriangle, X } from "lucide-react"
-import type { ToastState } from "./constants"
+import type { ToastState } from "@/lib/loan-plans"
 
 interface ToastProps {
   toast: NonNullable<ToastState>
