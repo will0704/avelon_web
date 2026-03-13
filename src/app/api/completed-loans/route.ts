@@ -13,7 +13,7 @@ import { proxyToBackend, jsonResponse } from '../_lib/proxy'
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   // Always filter for repaid loans
-  searchParams.set('status', 'repaid')
+  searchParams.set('status', 'REPAID')
   const query = searchParams.toString()
 
   const result = await proxyToBackend({
