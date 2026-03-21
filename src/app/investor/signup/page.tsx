@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { completeEmailAuth, completeWalletAuth, goToInvestorPortal } from "@/lib/investor-auth-flow";
+import { getInvestorSession, syncInvestorAuthCookieWithStorage } from "@/lib/investor-session";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Page = "landing" | "login" | "signup";
@@ -539,6 +540,12 @@ function SignUpContent() {
   const nextRaw = searchParams.get("next")?.trim() ?? "";
   const redirectTo =
     nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "/investor/dashboard";
+
+  useEffect(() => {
+    if (!getInvestorSession()) return;
+    syncInvestorAuthCookieWithStorage();
+    goToInvestorPortal(redirectTo);
+  }, [redirectTo]);
 
   return (
     <>
