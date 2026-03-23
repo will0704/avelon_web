@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { CheckCircle2, Info, Loader2, Wallet } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
-import { useAccount, useChainId, useSwitchChain, useSendTransaction } from "wagmi";
-import { parseEther } from "viem";
+import { useAccount, useBalance, useChainId, useSwitchChain, useSendTransaction } from "wagmi";
+import { formatEther, parseEther } from "viem";
 import { sepolia } from "wagmi/chains";
 import { useAppKit } from "@reown/appkit/react";
 
@@ -28,6 +28,10 @@ export default function InvestPage() {
   const { switchChainAsync } = useSwitchChain();
   const { sendTransactionAsync } = useSendTransaction();
   const { open: openAppKit } = useAppKit();
+  const { data: walletBalance } = useBalance({
+      address,
+      query: { enabled: isConnected },
+  });
 
   const [txHash, setTxHash] = useState("");
   const [amount, setAmount] = useState("");
@@ -132,6 +136,11 @@ export default function InvestPage() {
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-sm text-stone-600">
                 Connected: <span className="font-mono text-xs">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
+                {walletBalance && (
+                  <span className="ml-2 font-mono text-xs text-emerald-700">
+                    {parseFloat(formatEther(walletBalance.value)).toFixed(4)} {walletBalance.symbol}
+                  </span>
+                )}
               </span>
               <button
                 type="button"
