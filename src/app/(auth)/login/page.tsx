@@ -247,12 +247,20 @@ function LoginPageContent() {
                         </button>
                     </form>
 
-                    {/* Back to home */}
-                    <p style={{ textAlign: "center", fontSize: 13, color: "#9CA3AF", marginTop: 24 }}>
-                        <Link href="/" style={{ color: "#E85C1A", fontWeight: 600, fontFamily: "'Sora', sans-serif", fontSize: 13, textDecoration: "none" }}>
-                            ← Back to Home
-                        </Link>
-                    </p>
+                    {/* Links */}
+                    <div style={{ textAlign: "center", marginTop: 24, display: "flex", flexDirection: "column", gap: 8 }}>
+                        <p style={{ fontSize: 13, color: "#9CA3AF" }}>
+                            Don&apos;t have an account?{' '}
+                            <Link href="/register" style={{ color: "#E85C1A", fontWeight: 600, fontFamily: "'Sora', sans-serif", fontSize: 13, textDecoration: "none" }}>
+                                Sign Up
+                            </Link>
+                        </p>
+                        <p style={{ fontSize: 13, color: "#9CA3AF" }}>
+                            <Link href="/" style={{ color: "#9CA3AF", fontFamily: "'Sora', sans-serif", fontSize: 13, textDecoration: "none" }}>
+                                ← Back to Home
+                            </Link>
+                        </p>
+                    </div>
                 </div>
             </div>
 

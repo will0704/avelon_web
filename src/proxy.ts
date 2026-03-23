@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const protectedPrefixes = ['/admin', '/investor/dashboard', '/investor/invest', '/investor/withdraw', '/investor/pool', '/investor/transactions', '/investor/earnings', '/investor/notifications', '/investor/profile', '/investor/help'];
 
 // Routes that should redirect to dashboard if already authenticated
-const authRoutes = ['/login'];
+const authRoutes = ['/login', '/register', '/verify-email'];
 
 /**
  * Proxy function - runs before every request

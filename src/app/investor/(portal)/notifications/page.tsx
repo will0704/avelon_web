@@ -41,7 +41,7 @@ export default function NotificationsPage() {
   const notifications = data?.notifications ?? [];
 
   async function markAllRead() {
-    await api.post("/api/v1/notifications/read-all", {});
+    await api.put("/api/v1/notifications/read-all", {});
     refresh();
   }
 
